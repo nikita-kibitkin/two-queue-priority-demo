@@ -12,13 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ConsumerService {
-    private final Histogram histogram = new ConcurrentHistogram(10000000000L, 3);
+    private final Histogram histogram = new ConcurrentHistogram(100_000L, 3);
 
     @KafkaListener(topics = {"${spring.kafka.high-topic}"}, concurrency = "4", autoStartup = "true")
     public void handleHigh(Message msg) {
         recordLatency(msg);
     }
-
 
     @KafkaListener(topics = {"${spring.kafka.normal-topic}"}, concurrency = "4")
     public void handleNormal(Message msg) {
@@ -30,9 +29,7 @@ public class ConsumerService {
     }
 
     private void recordLatency(Message msg) {
-        var now = System.currentTimeMillis();
-        var latency = now - msg.startTimeMs();
-        log.info("Latency recorded: {} ms", latency);
+        var latency = System.currentTimeMillis() - msg.startTimeMs();
         histogram.recordValue(latency);
         log.info("Latency recorded: {} ms", latency);
     }

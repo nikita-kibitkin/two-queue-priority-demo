@@ -3,7 +3,7 @@ server:
 
 spring:
   kafka:
-    bootstrap-servers: https://localhost:9092
+    bootstrap-servers: https://kafka:9092
     high-topic: high-topic
     normal-topic: normal-topic
     consumer:

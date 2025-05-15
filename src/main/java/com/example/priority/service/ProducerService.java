@@ -34,7 +34,7 @@ public class ProducerService {
             Thread.sleep((long) intervalMs);
             var now = System.currentTimeMillis();
             boolean highPriority = random.nextDouble() < HIGH_PRIORITY_RATE; //
-            Message message = new Message(now,  highPriority, "payload-" + random);
+            Message message = new Message(now,  highPriority, "payload-" + random.nextDouble());
             kafkaTemplate.send(highPriority ? highTopic : normalTopic, message);
             log.info("Sent: {}, interval: {} ms", message, intervalMs);
         }
