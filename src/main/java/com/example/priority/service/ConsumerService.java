@@ -16,7 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @RequiredArgsConstructor
 public class ConsumerService {
-    private final Histogram histogram = new ConcurrentHistogram(100_000L, 3);
+    private final Histogram highHistogram = new ConcurrentHistogram(100_000L, 3);
+    private final Histogram normalHistogram = new ConcurrentHistogram(100_000L, 3);
     private final ConcurrentLinkedQueue<Message> highPriorityQueue = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Message> normalPriorityQueue = new ConcurrentLinkedQueue<>();
 
@@ -30,11 +31,14 @@ public class ConsumerService {
         normalPriorityQueue.add(msg);
     }
 
-    public Histogram getHistogram() {
-        return histogram.copy();
+    public Histogram getHighHistogram() {
+        return highHistogram.copy();
+    }
+    public Histogram getnNormalHistogram() {
+        return normalHistogram.copy();
     }
 
-    @Scheduled(fixedDelay = 100)
+    @Scheduled(fixedDelay = 2)
     public void processMessages() {
         if (highPriorityQueue.isEmpty() && normalPriorityQueue.isEmpty()) {
             return;
@@ -48,9 +52,13 @@ public class ConsumerService {
 
     @SneakyThrows
     private void emulateWorkAndRecordLatency(Message msg) {
-        Thread.sleep(50);
+        Thread.sleep(20);
         var latency = System.currentTimeMillis() - msg.startTimeMs();
-        histogram.recordValue(latency);
+        if (msg.highPriority()){
+            highHistogram.recordValue(latency);
+        }else {
+            normalHistogram.recordValue(latency);
+        }
         log.info("Latency recorded: {} ms", latency);
         log.info("Queues length: {}-{}   ", highPriorityQueue.size(), normalPriorityQueue.size());
     }

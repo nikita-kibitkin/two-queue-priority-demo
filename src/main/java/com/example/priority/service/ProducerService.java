@@ -23,9 +23,10 @@ public class ProducerService {
     private Double NUMBER_OF_MESSAGES; // total amount of messages in demo
     @Value(value = "${high-queue-chance}")
     private Double HIGH_QUEUE_CHANCE;    // 50:50 chances
+    @Value(value = "${lambda}")
+    private Double LAMBDA;
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();
-    private final static double LAMBDA = 9;                  // 9 messages per second
 
     @Scheduled(fixedDelay = 1000000)
     @SneakyThrows

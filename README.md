@@ -8,25 +8,17 @@
 * Docker / Docker Compose v2
 
 ## Quick Start
-
 ```bash
 git clone https://github.com/echovarga/two-queue-priority-demo.git
 cd two-queue-priority-demo
-
-# build the Spring Boot fat JAR 
 mvn clean package -DskipTests
-
-# run the full stack: Zookeeper, Kafka, Prometheus, Grafana, the app
+# build JAR goes to docker build
 docker compose up --build -d
-
 ```
 Available in a couple of minutes:
 * **Prometheus:** <http://localhost:9090>
 * **Grafana:** <http://localhost:3000> (login admin/admin)
-* latency_dashboard in Grafana and queue.latency metrics in Prometheus are available  → see P50/P95/P99.
+*  `grafana/priority_dashboard.json` → dashboard with P50/P95/P99.
 
-
-
-
-
-
+## Configuration
+application.yaml contains `number-of-messages`, `high-queue-chance`(0.5=50% chance. 0=normal queue only), `lambda` (messages per second) parameters.  Change and run `docker compose up --build -d`.

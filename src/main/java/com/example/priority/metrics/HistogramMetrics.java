@@ -15,11 +15,18 @@ public class HistogramMetrics {
 
     @PostConstruct
     void init() {
-        registry.gauge("queue.latency.p99", Tags.of("queue", "main"), consumerService,
-                consumer -> consumer.getHistogram().getValueAtPercentile(99));
-        registry.gauge("queue.latency.p95", Tags.of("queue", "main"), consumerService,
-                consumer -> consumer.getHistogram().getValueAtPercentile(95));
-        registry.gauge("queue.latency.p50", Tags.of("queue", "main"), consumerService,
-                consumer -> consumer.getHistogram().getValueAtPercentile(50));
+        registry.gauge("high.queue.latency.p99",  consumerService,
+                consumer -> consumer.getHighHistogram().getValueAtPercentile(99));
+        registry.gauge("high.queue.latency.p95",  consumerService,
+                consumer -> consumer.getHighHistogram().getValueAtPercentile(95));
+        registry.gauge("high.queue.latency.p50",  consumerService,
+                consumer -> consumer.getHighHistogram().getValueAtPercentile(50));
+        
+        registry.gauge("normal.queue.latency.p99",  consumerService,
+                consumer -> consumer.getnNormalHistogram().getValueAtPercentile(99));
+        registry.gauge("normal.queue.latency.p95",  consumerService,
+                consumer -> consumer.getnNormalHistogram().getValueAtPercentile(95));
+        registry.gauge("normal.queue.latency.p50",  consumerService,
+                consumer -> consumer.getnNormalHistogram().getValueAtPercentile(50));
     }
 }
