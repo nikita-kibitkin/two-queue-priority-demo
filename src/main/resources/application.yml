@@ -1,7 +1,8 @@
 server:
   port: 8080
 
-number-of-messages: 1000
+number-of-messages: 10
+high-queue-chance: 0.5  #0.5 = 50% chance. 0 = normal queue only
 
 spring:
   kafka:

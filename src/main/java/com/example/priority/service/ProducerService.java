@@ -21,9 +21,10 @@ public class ProducerService {
     private String normalTopic;
     @Value(value = "${number-of-messages}")
     private Double NUMBER_OF_MESSAGES; // total amount of messages in demo
+    @Value(value = "${high-queue-chance}")
+    private Double HIGH_QUEUE_CHANCE;    // 50:50 chances
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();
-    private final static double HIGH_PRIORITY_RATE = 0.5;    // 50:50 chances
     private final static double LAMBDA = 9;                  // 9 messages per second
 
     @Scheduled(fixedDelay = 1000000)
@@ -34,8 +35,8 @@ public class ProducerService {
             double intervalMs = -Math.log(1.0 - random.nextDouble()) / LAMBDA * 1000;
             Thread.sleep((long) intervalMs);
             var now = System.currentTimeMillis();
-            boolean highPriority = random.nextDouble() < HIGH_PRIORITY_RATE; //
-            Message message = new Message(now,  highPriority, "payload-" + random.nextDouble());
+            boolean highPriority = random.nextDouble() < HIGH_QUEUE_CHANCE; //
+            Message message = new Message(now, highPriority, "payload-" + random.nextDouble());
             kafkaTemplate.send(highPriority ? highTopic : normalTopic, message);
             log.info("Sent: {}, interval: {} ms", message, intervalMs);
         }
