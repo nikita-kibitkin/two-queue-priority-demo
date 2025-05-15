@@ -23,7 +23,7 @@ docker compose up --build -d
 Available in a couple of minutes:
 * **Prometheus:** <http://localhost:9090>
 * **Grafana:** <http://localhost:3000> (login admin/admin)
-* latency_dashboard are available in Grafana and queue.latency metrics are available in Prometheus → see P50/P95/P99.
+* latency_dashboard in Grafana and queue.latency metrics in Prometheus are available  → see P50/P95/P99.
 
 
 
