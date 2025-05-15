@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  kafka:
+    bootstrap-servers: https://localhost:9092
+    high-topic: high-topic
+    normal-topic: normal-topic
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.example.priority.model
+        spring.json.value.default.type: com.example.priority.model.Message
+        spring.json.use.type.headers: false
+
+management:
+  endpoints.web.exposure.include: health,metrics,prometheus
+  metrics.distribution.percentiles-histogram.http.server.requests: true
+  endpoint.prometheus.enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  defaults:
+    metrics:
+      export:
+        enabled: true
+
+#logging:
+#  level:
+#    org.springframework.kafka.listener: DEBUG
+#    org.apache.kafka.clients.consumer: DEBUG
