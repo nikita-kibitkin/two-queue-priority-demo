@@ -1,6 +1,8 @@
 server:
   port: 8080
 
+number-of-messages: 1000
+
 spring:
   kafka:
     bootstrap-servers: https://kafka:9092

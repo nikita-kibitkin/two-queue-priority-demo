@@ -19,10 +19,11 @@ public class ProducerService {
     private String highTopic;
     @Value(value = "${spring.kafka.normal-topic}")
     private String normalTopic;
+    @Value(value = "${number-of-messages}")
+    private Double NUMBER_OF_MESSAGES; // total amount of messages in demo
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();
     private final static double HIGH_PRIORITY_RATE = 0.5;    // 50:50 chances
-    private final static double NUMBER_OF_MESSAGES = 2; // total amount of messages in demo
     private final static double LAMBDA = 9;                  // 9 messages per second
 
     @Scheduled(fixedDelay = 1000000)

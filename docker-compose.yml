@@ -20,3 +20,18 @@ services:
     build: .
     ports: ["8080:8080"]
     depends_on: [kafka]
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: ["9090:9090"]
+    depends_on: [app]
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    ports: ["3000:3000"]
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on: [prometheus]
