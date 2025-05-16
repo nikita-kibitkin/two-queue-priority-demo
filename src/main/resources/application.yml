@@ -1,11 +1,15 @@
 server:
   port: 8080
 
-number-of-messages: 1000
-high-queue-chance: 0.5  #0.5=50% chance. 0=normal queue only
-lambda: 90 #messages per second
+number-of-messages: 500 # total amount of messages in demo
+high-queue-chance: 0.2  # 0=one queue only. Real case percentage of live (high priority) payments about 20%=0.2
+lambda: 90              #messages per second
 
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 2
   kafka:
     bootstrap-servers: https://kafka:9092
     high-topic: high-topic

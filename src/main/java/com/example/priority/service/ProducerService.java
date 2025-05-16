@@ -20,15 +20,15 @@ public class ProducerService {
     @Value(value = "${spring.kafka.normal-topic}")
     private String normalTopic;
     @Value(value = "${number-of-messages}")
-    private Double NUMBER_OF_MESSAGES; // total amount of messages in demo
+    private Double NUMBER_OF_MESSAGES;
     @Value(value = "${high-queue-chance}")
-    private Double HIGH_QUEUE_CHANCE;    // 50:50 chances
+    private Double HIGH_QUEUE_CHANCE;
     @Value(value = "${lambda}")
     private Double LAMBDA;
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();
 
-    @Scheduled(fixedDelay = 1000000)
+    @Scheduled(initialDelay = 5_000, fixedDelay = 1_000_000)
     @SneakyThrows
     public void poissonPublish() {
         log.info("Started PoissonPublish. Number of messages={}", NUMBER_OF_MESSAGES);
@@ -38,7 +38,7 @@ public class ProducerService {
             var now = System.currentTimeMillis();
             boolean highPriority = random.nextDouble() < HIGH_QUEUE_CHANCE; //
             Message message = new Message(now, highPriority, "payload-" + random.nextDouble());
-            kafkaTemplate.send(highPriority ? highTopic : normalTopic, message);
+            kafkaTemplate.send(highPriority ? highTopic : normalTopic, message).get();
             log.info("Sent: {}, interval: {} ms", message, intervalMs);
         }
         log.info("Finished PoissonPublish");

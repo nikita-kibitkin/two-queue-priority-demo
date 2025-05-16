@@ -20,10 +20,7 @@ services:
     build: .
     ports: ["8080:8080"]
     depends_on: [kafka]
-    environment:
-      NUMBER-OF-MESSAGES: 1000
-      HIGH-QUEUE-CHANCE: 0  #0.5=50% chance. 0=normal queue only
-      LAMBDA: 90              #messages per second
+
 
   prometheus:
     image: prom/prometheus:latest

@@ -34,11 +34,11 @@ public class KafkaConfig {
     /// Topics
     @Bean
     public NewTopic highTopic() {
-        return new NewTopic(highTopic, 1, (short) 1);
+        return new NewTopic(highTopic, 3, (short) 1);
     }
     @Bean
     public NewTopic normalTopic() {
-        return new NewTopic(normalTopic, 1, (short) 1);
+        return new NewTopic(normalTopic, 3, (short) 1);
     }
 
     /// Producer

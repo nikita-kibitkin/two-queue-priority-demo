@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -20,13 +22,14 @@ public class ConsumerService {
     private final Histogram normalHistogram = new ConcurrentHistogram(100_000L, 3);
     private final ConcurrentLinkedQueue<Message> highPriorityQueue = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Message> normalPriorityQueue = new ConcurrentLinkedQueue<>();
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
-    @KafkaListener(topics = {"${spring.kafka.high-topic}"}, concurrency = "4", autoStartup = "true")
+    @KafkaListener(topics = {"${spring.kafka.high-topic}"}, concurrency = "2")
     public void handleHigh(Message msg) {
         highPriorityQueue.add(msg);
     }
 
-    @KafkaListener(topics = {"${spring.kafka.normal-topic}"}, concurrency = "4")
+    @KafkaListener(topics = {"${spring.kafka.normal-topic}"}, concurrency = "2")
     public void handleNormal(Message msg) {
         normalPriorityQueue.add(msg);
     }
@@ -38,28 +41,29 @@ public class ConsumerService {
         return normalHistogram.copy();
     }
 
-    @Scheduled(fixedDelay = 2)
+    @Scheduled(fixedDelay = 30)
     public void processMessages() {
-        if (highPriorityQueue.isEmpty() && normalPriorityQueue.isEmpty()) {
+        var highPoll = highPriorityQueue.poll();
+        if (highPoll != null) {
+            executor.execute(() -> emulateWorkAndRecordLatency(highPoll));
             return;
         }
-        if (!highPriorityQueue.isEmpty()) {
-            emulateWorkAndRecordLatency(highPriorityQueue.poll());
-        } else {
-            emulateWorkAndRecordLatency(normalPriorityQueue.poll());
+        var normalPoll = normalPriorityQueue.poll();
+        if (normalPoll != null) {
+            executor.execute(() -> emulateWorkAndRecordLatency(normalPoll));
         }
     }
 
     @SneakyThrows
     private void emulateWorkAndRecordLatency(Message msg) {
-        Thread.sleep(20);
+        Thread.sleep(100);
         var latency = System.currentTimeMillis() - msg.startTimeMs();
-        if (msg.highPriority()){
+        if (msg.highPriority()) {
             highHistogram.recordValue(latency);
-        }else {
+        } else {
             normalHistogram.recordValue(latency);
         }
-        log.info("Latency recorded: {} ms", latency);
+        log.info("Latency recorded: {} ms; {}", latency, msg.highPriority() ? "high" : "normal");
         log.info("Queues length: {}-{}   ", highPriorityQueue.size(), normalPriorityQueue.size());
     }
 }
