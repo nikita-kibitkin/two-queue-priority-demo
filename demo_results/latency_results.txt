@@ -1,0 +1,19 @@
+
+Before (HIGH-QUEUE-CHANCE=0):
+    all average latency:
+        p99: 22319 ms
+        p95: 21743 ms
+        p50: 16671 ms
+
+
+After (HIGH-QUEUE-CHANCE=0.5):
+    high priority latency:
+        p99: 11839 ms
+        p95: 11799 ms
+        p50: 11383 ms
+    normal priority latency:
+        p99: 22927 ms
+        p95: 22719 ms
+        p50: 22575 ms
+
+

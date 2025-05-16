@@ -1,6 +1,9 @@
 [![Java CI with Maven](https://github.com/echovarga/two-queue-priority-demo/actions/workflows/maven.yml/badge.svg)](https://github.com/echovarga/two-queue-priority-demo/actions/workflows/maven.yml)
 
-# Two-Queue Priority Demo (Spring Boot + Kafka)
+# Two-Queue Priority Demo (Spring Boot + Kafka + Prometheus + Grafana)
+
+In this demo, you can see how adding a second higher priority queue significantly reduces the p99 latency of priority operations, while barely increasing p99 latency for normal priority operations.
+In the original production business case, we significantly sped up customer live payments (higher priority) by increasing their priority compared to recurring subscriptions (normal priority).
 
 ## Prerequisites
 * Java 17
@@ -21,4 +24,4 @@ Available in a couple of minutes:
 *  `grafana/priority_dashboard.json` → dashboard with P50/P95/P99.
 
 ## Configuration
-application.yaml contains `number-of-messages`, `high-queue-chance`(0.5=50% chance. 0=normal queue only), `lambda` (messages per second) parameters.  Change and run `docker compose up --build -d`.
+docker-compose.yaml contains `NUMBER-OF-MESSAGES`, `HIGH-QUEUE-CHANCE`(0.5=50% chance. 0=normal queue only), `LAMBDA` (messages per second) parameters.  Change and run `docker compose up --build -d`.
