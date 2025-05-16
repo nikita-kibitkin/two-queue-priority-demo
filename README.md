@@ -3,6 +3,7 @@
 # Two-Queue Priority Demo (Spring Boot + Kafka + Prometheus + Grafana)
 
 In this demo, you can see how adding a second higher priority queue significantly reduces the p99 latency of priority operations, while barely increasing p99 latency for normal priority operations.
+
 In the original production business case, we significantly sped up customer live payments (higher priority) by increasing their priority compared to recurring subscriptions (normal priority).
 
 ## Prerequisites
