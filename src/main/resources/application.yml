@@ -2,7 +2,7 @@ server:
   port: 8080
 
 number-of-messages: 500 # total amount of messages in demo
-high-queue-chance: 0.2  # 0=one queue only. Real case percentage of live (high priority) payments about 20%=0.2
+q1-chance: 0.2  # 0=one queue only. Real case percentage of live (high priority) payments about 20%=0.2
 lambda: 90              #messages per second
 
 spring:
@@ -12,8 +12,8 @@ spring:
         size: 2
   kafka:
     bootstrap-servers: https://kafka:9092
-    high-topic: high-topic
-    normal-topic: normal-topic
+    q1-topic: q1-topic
+    q2-topic: q2-topic
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

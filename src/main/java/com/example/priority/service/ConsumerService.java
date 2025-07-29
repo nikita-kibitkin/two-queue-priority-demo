@@ -18,39 +18,39 @@ import java.util.concurrent.Executors;
 @Service
 @RequiredArgsConstructor
 public class ConsumerService {
-    private final Histogram highHistogram = new ConcurrentHistogram(100_000L, 3);
-    private final Histogram normalHistogram = new ConcurrentHistogram(100_000L, 3);
-    private final ConcurrentLinkedQueue<Message> highPriorityQueue = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<Message> normalPriorityQueue = new ConcurrentLinkedQueue<>();
+    private final Histogram q1Histogram = new ConcurrentHistogram(100_000L, 3);
+    private final Histogram q2Histogram = new ConcurrentHistogram(100_000L, 3);
+    private final ConcurrentLinkedQueue<Message> q1 = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Message> q2 = new ConcurrentLinkedQueue<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     @KafkaListener(topics = {"${spring.kafka.high-topic}"}, concurrency = "2")
     public void handleHigh(Message msg) {
-        highPriorityQueue.add(msg);
+        q1.add(msg);
     }
 
     @KafkaListener(topics = {"${spring.kafka.normal-topic}"}, concurrency = "2")
     public void handleNormal(Message msg) {
-        normalPriorityQueue.add(msg);
+        q2.add(msg);
     }
 
     public Histogram getHighHistogram() {
-        return highHistogram.copy();
+        return q1Histogram.copy();
     }
     public Histogram getnNormalHistogram() {
-        return normalHistogram.copy();
+        return q2Histogram.copy();
     }
 
     @Scheduled(fixedDelay = 30)
-    public void processMessages() {
-        var highPoll = highPriorityQueue.poll();
-        if (highPoll != null) {
-            executor.execute(() -> emulateWorkAndRecordLatency(highPoll));
+    public void queueDispatcher() {
+        var q1Poll = q1.poll();
+        if (q1Poll != null) {
+            executor.execute(() -> emulateWorkAndRecordLatency(q1Poll));
             return;
         }
-        var normalPoll = normalPriorityQueue.poll();
-        if (normalPoll != null) {
-            executor.execute(() -> emulateWorkAndRecordLatency(normalPoll));
+        var q2Poll = q2.poll();
+        if (q2Poll != null) {
+            executor.execute(() -> emulateWorkAndRecordLatency(q2Poll));
         }
     }
 
@@ -59,11 +59,11 @@ public class ConsumerService {
         Thread.sleep(100);
         var latency = System.currentTimeMillis() - msg.startTimeMs();
         if (msg.highPriority()) {
-            highHistogram.recordValue(latency);
+            q1Histogram.recordValue(latency);
         } else {
-            normalHistogram.recordValue(latency);
+            q2Histogram.recordValue(latency);
         }
         log.info("Latency recorded: {} ms; {}", latency, msg.highPriority() ? "high" : "normal");
-        log.info("Queues length: {}-{}   ", highPriorityQueue.size(), normalPriorityQueue.size());
+        log.info("Queues length: {}-{}   ", q1.size(), q2.size());
     }
 }

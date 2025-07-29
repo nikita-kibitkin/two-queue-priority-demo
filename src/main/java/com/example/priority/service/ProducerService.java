@@ -15,16 +15,16 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class ProducerService {
-    @Value(value = "${spring.kafka.high-topic}")
-    private String highTopic;
-    @Value(value = "${spring.kafka.normal-topic}")
-    private String normalTopic;
+    @Value(value = "${spring.kafka.q1-topic}")
+    private String q1Topic;
+    @Value(value = "${spring.kafka.q2-topic}")
+    private String q2Topic;
     @Value(value = "${number-of-messages}")
     private Double NUMBER_OF_MESSAGES;
-    @Value(value = "${high-queue-chance}")
-    private Double HIGH_QUEUE_CHANCE;
+    @Value(value = "${q1-chance}")
+    private Double Q1_CHANCE;  //0=one queue only. Real case percentage of live (high priority) payments about 20%=0.2
     @Value(value = "${lambda}")
-    private Double LAMBDA;
+    private Double LAMBDA;  //messages per second
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();
 
@@ -36,9 +36,9 @@ public class ProducerService {
             double intervalMs = -Math.log(1.0 - random.nextDouble()) / LAMBDA * 1000;
             Thread.sleep((long) intervalMs);
             var now = System.currentTimeMillis();
-            boolean highPriority = random.nextDouble() < HIGH_QUEUE_CHANCE; //
+            boolean highPriority = random.nextDouble() < Q1_CHANCE; //
             Message message = new Message(now, highPriority, "payload-" + random.nextDouble());
-            kafkaTemplate.send(highPriority ? highTopic : normalTopic, message).get();
+            kafkaTemplate.send(highPriority ? q1Topic : q2Topic, message).get();
             log.info("Sent: {}, interval: {} ms", message, intervalMs);
         }
         log.info("Finished PoissonPublish");

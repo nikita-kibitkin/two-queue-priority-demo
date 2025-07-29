@@ -26,9 +26,9 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
-    @Value(value = "${spring.kafka.high-topic}")
+    @Value(value = "${spring.kafka.q1-topic}")
     private String highTopic;
-    @Value(value = "${spring.kafka.normal-topic}")
+    @Value(value = "${spring.kafka.q2-topic}")
     private String normalTopic;
 
     /// Topics
