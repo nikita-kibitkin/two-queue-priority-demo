@@ -23,7 +23,6 @@ import java.util.Map;
 
 @Configuration
 public class KafkaConfig {
-
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
     @Value(value = "${spring.kafka.q1-topic}")
@@ -31,17 +30,18 @@ public class KafkaConfig {
     @Value(value = "${spring.kafka.q2-topic}")
     private String normalTopic;
 
-    /// Topics
+    //Topics
     @Bean
     public NewTopic highTopic() {
         return new NewTopic(highTopic, 3, (short) 1);
     }
+
     @Bean
     public NewTopic normalTopic() {
         return new NewTopic(normalTopic, 3, (short) 1);
     }
 
-    /// Producer
+    //Producer
     @Bean
     public ProducerFactory<String, Message> producerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -50,12 +50,13 @@ public class KafkaConfig {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(props);
     }
+
     @Bean
     public KafkaTemplate<String, Message> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    /// Listeners
+    //Listeners
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
         Map<String, Object> props = new HashMap<>();
