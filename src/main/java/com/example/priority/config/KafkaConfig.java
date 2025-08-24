@@ -25,10 +25,10 @@ import java.util.Map;
 public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
-    @Value(value = "${spring.kafka.q1-topic}")
+    @Value(value = "${spring.kafka.high-topic}")
     private String highTopic;
-    @Value(value = "${spring.kafka.q2-topic}")
-    private String normalTopic;
+    @Value(value = "${spring.kafka.bulk-topic}")
+    private String bulkTopic;
 
     //Topics
     @Bean
@@ -38,7 +38,7 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic normalTopic() {
-        return new NewTopic(normalTopic, 3, (short) 1);
+        return new NewTopic(bulkTopic, 3, (short) 1);
     }
 
     //Producer
