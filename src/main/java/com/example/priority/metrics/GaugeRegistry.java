@@ -20,20 +20,20 @@ public class GaugeRegistry {
         Gauge.builder("bulk.throughput", ThroughputMetrics::getCurrentThroughputBulk)
                 .register(registry);
         //latency
-        Gauge.builder("high.latency.p99", () -> LatencyMetrics.getHighHistogram().getValueAtPercentile(99))
+        Gauge.builder("high.latency.p99", () -> LatencyMetrics.getHighHistogramCopy().getValueAtPercentile(99))
                 .register(registry);
-        Gauge.builder("high.latency.p95", () -> LatencyMetrics.getHighHistogram().getValueAtPercentile(95))
+        Gauge.builder("high.latency.p95", () -> LatencyMetrics.getHighHistogramCopy().getValueAtPercentile(95))
                 .register(registry);
-        Gauge.builder("high.latency.p50", () -> LatencyMetrics.getHighHistogram().getValueAtPercentile(50))
+        Gauge.builder("high.latency.p50", () -> LatencyMetrics.getHighHistogramCopy().getValueAtPercentile(50))
                 .register(registry);
-        Gauge.builder("bulk.latency.p99", () -> LatencyMetrics.getBulkHistogram().getValueAtPercentile(99))
+        Gauge.builder("bulk.latency.p99", () -> LatencyMetrics.getBulkHistogramCopy().getValueAtPercentile(99))
                 .register(registry);
-        Gauge.builder("bulk.latency.p95", () -> LatencyMetrics.getBulkHistogram().getValueAtPercentile(95))
+        Gauge.builder("bulk.latency.p95", () -> LatencyMetrics.getBulkHistogramCopy().getValueAtPercentile(95))
                 .register(registry);
-        Gauge.builder("bulk.latency.p50", () -> LatencyMetrics.getBulkHistogram().getValueAtPercentile(50))
+        Gauge.builder("bulk.latency.p50", () -> LatencyMetrics.getBulkHistogramCopy().getValueAtPercentile(50))
                 .register(registry);
         //queue lag
-        Gauge.builder("bulk.queue.lag", doubleQueueService::getHighLag)
+        Gauge.builder("high.queue.lag", doubleQueueService::getHighLag)
                 .register(registry);
         Gauge.builder("bulk.queue.lag", doubleQueueService::getBulkLag)
                 .register(registry);

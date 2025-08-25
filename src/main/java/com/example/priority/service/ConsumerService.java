@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 @RequiredArgsConstructor
 public class ConsumerService {
     private final DoubleQueueService dqs;
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(25);
     // Hysteresis thresholds: allow bulk only below LOW_WM; forbid bulk at/above HIGH_WM.
     private static final int LOW_WM = 20;
     private static final int HIGH_WM = 100;
@@ -28,17 +28,19 @@ public class ConsumerService {
     @KafkaListener(topics = {"${spring.kafka.high-topic}"}, concurrency = "2")
     public void handleHigh(Message msg) {
         dqs.addToHigh(msg);
+        log.info("Received high-message {}", msg);
     }
 
-    @KafkaListener(topics = {"${spring.kafka.normal-topic}"}, concurrency = "2")
-    public void handleNormal(Message msg) {
+    @KafkaListener(topics = {"${spring.kafka.bulk-topic}"}, concurrency = "2")
+    public void handleBulk(Message msg) {
         dqs.addToBulk(msg);
+        log.info("Received bulk-message {}", msg);
     }
 
     @Scheduled(fixedDelay = 30)
     public void queueDispatcher() {
         // 1) Always drain high first (bounded by available permits).
-        while (permits.tryAcquire() && !dqs.isHighEmpty()) {
+        while (!dqs.isHighEmpty() && permits.tryAcquire()) {
             Message m = dqs.pollHigh();
             if (m == null) break;
             executor.execute(() -> {
@@ -58,6 +60,7 @@ public class ConsumerService {
             int given = 0;
             while (given < BULK_BUDGET && !dqs.isBulkEmpty()) {
                 Message m = dqs.pollBulk();
+                log.info("Polled bulk-message {}", m);
                 if (m == null) break;
                 if (submitWithPermit(executor, permits,
                         () -> emulateWorkAndRecordMetrics(m),
@@ -88,6 +91,7 @@ public class ConsumerService {
             return false;
         }
     }
+
 
     @SneakyThrows
     private void emulateWorkAndRecordMetrics(Message msg) {

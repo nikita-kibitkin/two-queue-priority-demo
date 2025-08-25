@@ -26,9 +26,9 @@ public class ProducerService {
     private String bulkTopic;
     @Value(value = "${poisson.duration-minutes}")
     private int DURATION_MINUTES;
-    @Value(value = "${high-priority-chance}")
+    @Value(value = "${poisson.high-priority-chance}")
     private Double HIGH_CHANCE;  //0=one queue only. Real case percentage of live (high priority) payments about 20%=0.2
-    @Value(value = "${lambda}")
+    @Value(value = "${poisson.lambda}")
     private Double LAMBDA;  //messages per second
     private final KafkaTemplate<String, Message> kafkaTemplate;
     private final Random random = new Random();

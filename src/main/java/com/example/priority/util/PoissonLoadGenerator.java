@@ -1,5 +1,6 @@
 package com.example.priority.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.time.Duration;
@@ -8,6 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 public final class PoissonLoadGenerator {
     private final TaskScheduler scheduler;
     private final Runnable task;
@@ -23,6 +25,7 @@ public final class PoissonLoadGenerator {
     }
 
     public void start(Duration duration) {
+        log.info("Starting PoissonLoadGenerator");
         if (!running.compareAndSet(false, true)) return;
         scheduleNext();
         if (duration != null) {
@@ -33,6 +36,7 @@ public final class PoissonLoadGenerator {
     public void stop() {
         running.set(false);
         if (stopFuture != null) stopFuture.cancel(false);
+        log.info("PoissonLoadGenerator stopped");
     }
 
     private void scheduleNext() {

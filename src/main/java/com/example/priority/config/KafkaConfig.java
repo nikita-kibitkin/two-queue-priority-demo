@@ -37,7 +37,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic normalTopic() {
+    public NewTopic bulkTopic() {
         return new NewTopic(bulkTopic, 3, (short) 1);
     }
 
